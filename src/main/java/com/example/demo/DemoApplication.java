@@ -35,6 +35,18 @@ public class DemoApplication {
 
 		System.out.println(postResponse.body());
 
+		transcript = gson.fromJson(postResponse.body(),Transcript.class);
+		System.out.println(transcript.getId());
+
+		HttpRequest getRequest = HttpRequest.newBuilder()
+				.uri(new URI("https://api.assemblyai.com/v2/transcript" + transcript.getId()))
+				.header("Autorization", Constants.API_KEY)
+				.build();
+
+		HttpResponse<String> getResponse = httpClient.send(getRequest,HttpResponse.BodyHandlers.ofString());
+		transcript = gson.fromJson(getResponse.body(),Transcript.class);
+		System.out.println(transcript.getId());
+
 
 	}
 
