@@ -16,7 +16,7 @@ public class DemoApplication {
 	public static void main(String[] args) throws URISyntaxException {
 		SpringApplication.run(DemoApplication.class, args);
 
-        Transcript transcript = new Transcript();
+		Transcript transcript = new Transcript();
 		transcript.setAudio_url("https:// audio path url ");
 		Gson gson = new Gson();
 		String jsonRequest = gson.toJson(transcript);
@@ -35,7 +35,7 @@ public class DemoApplication {
 
 		System.out.println(postResponse.body());
 
-		transcript = gson.fromJson(postResponse.body(),Transcript.class);
+		transcript = gson.fromJson(postResponse.body(), Transcript.class);
 		System.out.println(transcript.getId());
 
 		HttpRequest getRequest = HttpRequest.newBuilder()
@@ -43,11 +43,20 @@ public class DemoApplication {
 				.header("Autorization", Constants.API_KEY)
 				.build();
 
-		HttpResponse<String> getResponse = httpClient.send(getRequest,HttpResponse.BodyHandlers.ofString());
-		transcript = gson.fromJson(getResponse.body(),Transcript.class);
-		System.out.println(transcript.getId());
+		while (true) {
+			HttpResponse<String> getResponse = httpClient.send(getRequest, HttpResponse.BodyHandlers.ofString());
+			transcript = gson.fromJson(getResponse.body(), Transcript.class);
 
+			System.out.println(transcript.getStatus());
 
+			if ("completed".equals(transcript.getStatus()) || "error".equals(transcript.getStatus())){
+				break;
+		}
+		Thread.sleep(1000);
+
+	}
+		System.out.println("Transcription completed!");
+		System.out.println(transcript.getText());
 	}
 
 }
